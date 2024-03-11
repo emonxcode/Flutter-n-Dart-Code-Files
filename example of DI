@@ -1,0 +1,44 @@
+
+Without DI:
+
+class CoffeeMachine {
+  Grinder grinder = Grinder(); // Create a concrete Grinder instance
+  Heater heater = Heater(); // Create a concrete Heater instance
+
+  void brewCoffee() {
+    grinder.grindBeans();
+    heater.heatWater();
+    // ... rest of the coffee brewing logic
+  }
+}
+
+In this example, the CoffeeMachine directly creates instances of its dependencies (Grinder and Heater). This approach has some drawbacks:
+
+Less Flexible: The CoffeeMachine class is tightly coupled to specific implementations of Grinder and Heater. It can't easily use different grinders or heaters.
+Testing Challenges: Unit testing the CoffeeMachine becomes more complex because you need to mock or stub the concrete implementations of Grinder and Heater.
+With DI:
+
+
+class CoffeeMachine {
+  final Grinder grinder;
+  final Heater heater;
+
+  CoffeeMachine(this.grinder, this.heater); // Dependencies injected through constructor
+
+  void brewCoffee() {
+    grinder.grindBeans();
+    heater.heatWater();
+    // ... rest of the coffee brewing logic
+  }
+}
+
+In this approach:
+
+The CoffeeMachine constructor takes the Grinder and Heater as arguments (dependencies).
+This allows you to inject different implementations of these dependencies during object creation.
+For example, you could create a FrenchPressCoffeeMachine that uses a ManualGrinder and an ElectricHeater, while an EspressoMachine might use a BurrGrinder and a Boiler.
+Benefits of DI:
+
+Improved Testability: By injecting dependencies, you can easily mock or stub them during unit testing, isolating the CoffeeMachine logic for better testing.
+Increased Flexibility: The CoffeeMachine becomes more flexible as it can work with different implementations of its dependencies.
+Loose Coupling: The CoffeeMachine is less tightly coupled to specific concrete implementations, promoting better code maintainability.
