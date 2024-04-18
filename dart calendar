@@ -1,0 +1,55 @@
+import 'dart:core';
+
+class CalendarData {
+  String month;
+  List<Map<String, String>> days;
+
+  CalendarData({required this.month, required this.days});
+
+  Map<String, dynamic> toJson() => {
+        'month': month,
+        'days': days,
+      };
+}
+
+List<CalendarData> generateCalendar(int year) {
+  List<String> months = [
+    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+  ];
+
+  List<int> daysInMonth = [
+    31, // January
+    (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28, // February
+    31, // March
+    30, // April
+    31, // May
+    30, // June
+    31, // July
+    31, // August
+    30, // September
+    31, // October
+    30, // November
+    31, // December
+  ];
+
+  List<String> daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  List<CalendarData> calendar = [];
+
+  for (int i = 0; i < months.length; i++) {
+    List<Map<String, String>> monthData = [];
+    for (int j = 1; j <= daysInMonth[i]; j++) {
+      int dayOfWeekIndex = DateTime(year, i + 1, j).weekday - 1;
+      monthData.add({'date': j.toString().padLeft(2, '0'), 'day': daysOfWeek[dayOfWeekIndex]});
+    }
+    calendar.add(CalendarData(month: months[i], days: monthData));
+  }
+
+  return calendar;
+}
+
+void main() {
+  int year = 2024;
+  List<CalendarData> calendar = generateCalendar(year);
+    print(calendar[0].toJson());
+}
