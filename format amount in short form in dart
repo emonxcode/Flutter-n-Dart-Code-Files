@@ -1,0 +1,61 @@
+String formatAmount(double amount) {
+  if (amount >= 100000000) {
+    // Handle Crore with "Cr" suffix (existing logic)
+    return formatAmountWithCr(amount);
+  } else if (amount >= 1000000) {
+    // Handle Millions with "M" suffix (existing logic)
+    return formatAmountWithM(amount);
+  } else if (amount >= 100000) {
+    // Convert to Lakh with one decimal place (rounded)
+    final formattedAmount = (amount / 100000).toStringAsFixed(1);
+    // Remove trailing zeros (optional)
+    final trimmedAmount = formattedAmount.trimRight().replaceAll('.0', '');
+    return '${trimmedAmount}L';
+  } else if (amount >= 1000) {
+    // Handle thousands with "k" suffix (existing logic)
+    return formatAmountWithK(amount);
+  } else {
+    return amount.toString();
+  }
+}
+
+String formatAmountWithCr(double amount) {
+  // Existing logic for formatting with "Cr" suffix
+  final formattedAmount = (amount / 100000000).toStringAsFixed(1);
+  final trimmedAmount = formattedAmount.trimRight().replaceAll('.0', '');
+  return '${trimmedAmount}Cr';
+}
+
+String formatAmountWithM(double amount) {
+  // Existing logic for formatting with "M" suffix
+  final formattedAmount = (amount / 1000000).toStringAsFixed(1);
+  final trimmedAmount = formattedAmount.trimRight().replaceAll('.0', '');
+  return '${trimmedAmount}M';
+}
+
+String formatAmountWithK(double amount) {
+  // Existing logic for formatting with "k" suffix
+  final formattedAmount = (amount / 1000).toStringAsFixed(1);
+  final trimmedAmount = formattedAmount.trimRight().replaceAll('.0', '');
+  return '${trimmedAmount}k';
+}
+
+// Example usage
+void main() {
+  final amounts = <double>[15, 100, 1234, 99999, 123456.78, 1234567.89, 12345678.12, 123456789.01];
+  for (double amount in amounts) {
+    final formattedAmount = formatAmount(amount);
+    print('$amount -> $formattedAmount');
+  }
+}
+
+
+output:
+15 -> 15
+100 -> 100
+1234 -> 1.2k
+99999 -> 100k
+123456.78 -> 1.2L
+1234567.89 -> 1.2M
+12345678.12 -> 12.3M
+123456789.01 -> 1.2Cr
