@@ -1,0 +1,128 @@
+
+class CustomGridWidget extends StatelessWidget {
+  final List<String> dataList;
+
+  const CustomGridWidget({super.key, required this.dataList});
+
+  @override
+  Widget build(BuildContext context) {
+    double itemHeight =
+        MediaQuery.of(context).size.width / 2; // Each row will contain 2 items
+    double containerHeight = (dataList.length / 2) * itemHeight;
+
+    return SizedBox(
+      // height: containerHeight,
+      child: Column(
+        children: _buildRows(context),
+      ),
+    );
+  }
+
+  List<Widget> _buildRows(BuildContext context) {
+    List<Widget> rows = [];
+
+    for (int i = 0; i < dataList.length; i += 2) {
+      // For each pair of items, create a row
+      if (i + 1 < dataList.length) {
+        rows.add(Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildItem(dataList[i], context),
+            AppSpace.spaceW8, // Adjust as needed
+            _buildItem(dataList[i + 1], context),
+          ],
+        ));
+      } else {
+        // If there's only one item left, create a row with a single item
+        rows.add(Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildItem(dataList[i], context),
+          ],
+        ));
+      }
+    }
+
+    return rows;
+  }
+
+  Widget _buildItem(String data, BuildContext context) {
+    return Container(
+      height: 160,
+      width: context.width * 0.38,
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Theme.of(context).cardTheme.color,
+          boxShadow: [
+            BoxShadow(
+              offset: const Offset(0, 0),
+              spreadRadius: 2,
+              blurRadius: 2,
+              color: Theme.of(context).cardTheme.shadowColor!,
+            )
+          ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 80,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              color: Theme.of(context).cardTheme.color,
+            ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              child: Image.asset(
+                'assets/images/img.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const QtecTextWidget(
+                  text: "2kg Fresh Broiler",
+                  maxLines: 1,
+                  fontWeight: FontWeight.bold,
+                ),
+                QtecTextWidget(
+                  text: "250/-",
+                  maxLines: 1,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const Row(
+                  children: [
+                    QtecTextWidget(
+                      text: "300 ",
+                      maxLines: 1,
+                      textDecoration: TextDecoration.lineThrough,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    QtecTextWidget(
+                      text: "(-20%)",
+                      maxLines: 1,
+                      fontWeight: FontWeight.bold,
+                      color: ColorPallete.categoryText1Color,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
