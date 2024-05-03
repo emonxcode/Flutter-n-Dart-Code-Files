@@ -1,17 +1,30 @@
+import 'package:dokanee/core/theme/color.pallete.dart';
+import 'package:dokanee/core/utils/extensions/extensions.dart'; // Assuming this is a custom extension file
+import 'package:flutter/material.dart';
+import '../../utils/app_space.dart';
 
-class CustomGridWidget extends StatelessWidget {
-  final List<String> dataList;
+class DokaneeGridView<T> extends StatelessWidget {
+  final List<T> dataList;
+  final IndexedWidgetBuilder itemBuilder;
+  final int rowCount; // Added rowCount parameter for dynamic rows
+  final double? itemHeight;
+  final double? itemWidth;
+  final BoxDecoration? itemDecoration;
 
-  const CustomGridWidget({super.key, required this.dataList});
+  const DokaneeGridView({
+    super.key,
+    required this.dataList,
+    required this.itemBuilder,
+    required this.rowCount, // Validate rowCount
+    this.itemHeight,
+    this.itemWidth,
+    this.itemDecoration,
+  }) : assert(rowCount > 0, 'rowCount must be a positive integer');
 
   @override
   Widget build(BuildContext context) {
-    double itemHeight =
-        MediaQuery.of(context).size.width / 2; // Each row will contain 2 items
-    double containerHeight = (dataList.length / 2) * itemHeight;
-
-    return SizedBox(
-      // height: containerHeight,
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Column(
         children: _buildRows(context),
       ),
@@ -20,109 +33,58 @@ class CustomGridWidget extends StatelessWidget {
 
   List<Widget> _buildRows(BuildContext context) {
     List<Widget> rows = [];
+    int currentIndex = 0;
 
-    for (int i = 0; i < dataList.length; i += 2) {
-      // For each pair of items, create a row
-      if (i + 1 < dataList.length) {
-        rows.add(Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildItem(dataList[i], context),
-            AppSpace.spaceW8, // Adjust as needed
-            _buildItem(dataList[i + 1], context),
-          ],
+    while (currentIndex < dataList.length) {
+      // Create rows with up to rowCount items
+      List<Widget> currentRow = [];
+      for (int i = 0; i < rowCount && currentIndex < dataList.length; i++) {
+        currentRow.add(_buildItem(
+          data: dataList[currentIndex],
+          context: context,
+          itemBuilder: itemBuilder,
+          height: itemHeight,
+          width: itemWidth,
+          containerDecoration: itemDecoration,
         ));
-      } else {
-        // If there's only one item left, create a row with a single item
-        rows.add(Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildItem(dataList[i], context),
-          ],
-        ));
+        currentIndex++;
       }
+
+      rows.add(Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: currentRow,
+      ));
     }
 
     return rows;
   }
 
-  Widget _buildItem(String data, BuildContext context) {
+  Widget _buildItem({
+    BoxDecoration? containerDecoration,
+    double? height,
+    double? width,
+    required T data,
+    required IndexedWidgetBuilder itemBuilder,
+    required BuildContext context,
+  }) {
     return Container(
-      height: 160,
-      width: context.width * 0.38,
+      height: height ?? 160,
+      width: width ?? context.width * 0.23,
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Theme.of(context).cardTheme.color,
-          boxShadow: [
-            BoxShadow(
-              offset: const Offset(0, 0),
-              spreadRadius: 2,
-              blurRadius: 2,
-              color: Theme.of(context).cardTheme.shadowColor!,
-            )
-          ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 80,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
+      decoration: containerDecoration ??
+          BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
               color: Theme.of(context).cardTheme.color,
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-              child: Image.asset(
-                'assets/images/img.png',
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const QtecTextWidget(
-                  text: "2kg Fresh Broiler",
-                  maxLines: 1,
-                  fontWeight: FontWeight.bold,
-                ),
-                QtecTextWidget(
-                  text: "250/-",
-                  maxLines: 1,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-                const Row(
-                  children: [
-                    QtecTextWidget(
-                      text: "300 ",
-                      maxLines: 1,
-                      textDecoration: TextDecoration.lineThrough,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    QtecTextWidget(
-                      text: "(-20%)",
-                      maxLines: 1,
-                      fontWeight: FontWeight.bold,
-                      color: ColorPallete.categoryText1Color,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+              boxShadow: [
+                BoxShadow(
+                  offset: const Offset(0, 0),
+                  spreadRadius: 2,
+                  blurRadius: 2,
+                  color: ColorPallete.lightGrey,
+                )
+              ]),
+      child: itemBuilder(context,
+          dataList.indexOf(data)), // Call itemBuilder with currentIndex
     );
   }
 }
