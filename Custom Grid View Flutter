@@ -7,7 +7,6 @@ class DokaneeGridView<T> extends StatefulWidget {
   final int rowCount; // Added rowCount parameter for dynamic rows
   final double? itemHeight;
   final double? itemWidth;
-  final BoxDecoration? itemDecoration;
 
   const DokaneeGridView({
     super.key,
@@ -16,7 +15,6 @@ class DokaneeGridView<T> extends StatefulWidget {
     required this.rowCount, // Validate rowCount
     this.itemHeight,
     this.itemWidth,
-    this.itemDecoration,
   }) : assert(rowCount > 0, 'rowCount must be a positive integer');
 
   @override
