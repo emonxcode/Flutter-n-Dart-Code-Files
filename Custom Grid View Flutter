@@ -1,9 +1,7 @@
-import 'package:dokanee/core/theme/color.pallete.dart';
 import 'package:dokanee/core/utils/extensions/extensions.dart'; // Assuming this is a custom extension file
 import 'package:flutter/material.dart';
-import '../../utils/app_space.dart';
 
-class DokaneeGridView<T> extends StatelessWidget {
+class DokaneeGridView<T> extends StatefulWidget {
   final List<T> dataList;
   final IndexedWidgetBuilder itemBuilder;
   final int rowCount; // Added rowCount parameter for dynamic rows
@@ -22,9 +20,14 @@ class DokaneeGridView<T> extends StatelessWidget {
   }) : assert(rowCount > 0, 'rowCount must be a positive integer');
 
   @override
+  State<DokaneeGridView<T>> createState() => _DokaneeGridViewState<T>();
+}
+
+class _DokaneeGridViewState<T> extends State<DokaneeGridView<T>> {
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
+      physics: const PageScrollPhysics(),
       child: Column(
         children: _buildRows(context),
       ),
@@ -35,23 +38,23 @@ class DokaneeGridView<T> extends StatelessWidget {
     List<Widget> rows = [];
     int currentIndex = 0;
 
-    while (currentIndex < dataList.length) {
-      // Create rows with up to rowCount items
+    while (currentIndex < widget.dataList.length) {
       List<Widget> currentRow = [];
-      for (int i = 0; i < rowCount && currentIndex < dataList.length; i++) {
+      for (int i = 0;
+          i < widget.rowCount && currentIndex < widget.dataList.length;
+          i++) {
         currentRow.add(_buildItem(
-          data: dataList[currentIndex],
+          data: widget.dataList[currentIndex],
           context: context,
-          itemBuilder: itemBuilder,
-          height: itemHeight,
-          width: itemWidth,
-          containerDecoration: itemDecoration,
+          itemBuilder: widget.itemBuilder,
+          height: widget.itemHeight,
+          width: widget.itemWidth,
         ));
         currentIndex++;
       }
 
       rows.add(Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: currentRow,
       ));
     }
@@ -60,7 +63,6 @@ class DokaneeGridView<T> extends StatelessWidget {
   }
 
   Widget _buildItem({
-    BoxDecoration? containerDecoration,
     double? height,
     double? width,
     required T data,
@@ -68,23 +70,11 @@ class DokaneeGridView<T> extends StatelessWidget {
     required BuildContext context,
   }) {
     return Container(
-      height: height ?? 160,
+      height: height ?? 120,
       width: width ?? context.width * 0.23,
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      decoration: containerDecoration ??
-          BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Theme.of(context).cardTheme.color,
-              boxShadow: [
-                BoxShadow(
-                  offset: const Offset(0, 0),
-                  spreadRadius: 2,
-                  blurRadius: 2,
-                  color: ColorPallete.lightGrey,
-                )
-              ]),
       child: itemBuilder(context,
-          dataList.indexOf(data)), // Call itemBuilder with currentIndex
+          widget.dataList.indexOf(data)), // Call itemBuilder with currentIndex
     );
   }
 }
