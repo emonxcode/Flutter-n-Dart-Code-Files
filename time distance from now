@@ -1,0 +1,14 @@
+  String distanceFromNow(DateTime dateTime) {
+    DateTime now = DateTime.now();
+    Duration difference = now.difference(dateTime);
+
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} min ago';
+    } else if (difference.inHours < 24 && now.day == dateTime.day) {
+      return '${difference.inHours} hour ago';
+    } else if (difference.inDays == 1) {
+      return '1 day ago';
+    } else {
+      return '${difference.inDays} days ago';
+    }
+  }
