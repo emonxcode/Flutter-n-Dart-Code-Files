@@ -1,0 +1,269 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+import 'package:path/path.dart';
+import 'package:poultry_agricare_app/core/theme/color_pallete.dart';
+import 'package:poultry_agricare_app/core/utils/extensions/extensions.dart';
+import 'package:poultry_agricare_app/src/notifications/data/models/notification_models.dart';
+
+import '../../../../core/common/widgets/background.image.widget.dart';
+import '../../../../core/common/widgets/qtec_text.dart';
+import '../../../../core/utils/app_space.dart';
+
+class NotificationsPage extends StatefulWidget {
+  const NotificationsPage({super.key});
+
+  @override
+  State<NotificationsPage> createState() => _NotificationsPageState();
+}
+
+class _NotificationsPageState extends State<NotificationsPage> {
+  var notifications = <NotificationModel>[
+    NotificationModel(
+      text: "Abdullah commented on your status",
+      time: '2024-05-09 16:15:31.561180',
+      isSeen: false,
+      imageUrl: '',
+    ),
+    NotificationModel(
+      text: "Mr Rahman likes your photo",
+      time: '2024-05-08 16:15:31.561180',
+      isSeen: false,
+      imageUrl: '',
+    ),
+    NotificationModel(
+      text: "Abc Farm flocks will be vaccinated",
+      time: '2024-05-08 16:15:31.561180',
+      isSeen: true,
+      imageUrl: '',
+    ),
+    NotificationModel(
+      text: "Mr. hasan shared your post ",
+      time: '2024-05-08 16:15:31.561180',
+      isSeen: false,
+      imageUrl: '',
+    ),
+    NotificationModel(
+      text: "New tutorial is added!",
+      time: '2024-05-07 16:15:31.561180',
+      isSeen: true,
+      imageUrl: '',
+    ),
+    NotificationModel(
+      text: "Abc Farm flocks will be vaccinated",
+      time: '2024-05-07 16:15:31.561180',
+      isSeen: true,
+      imageUrl: '',
+    ),
+    NotificationModel(
+      text: "Abdullah commented on your status",
+      time: '2024-05-07 16:15:31.561180',
+      isSeen: true,
+      imageUrl: '',
+    ),
+    NotificationModel(
+      text: "Mr. hasan shared your post ",
+      time: '2024-05-06 16:15:31.561180',
+      isSeen: false,
+      imageUrl: '',
+    ),
+  ];
+
+  String getIconPath(String input) {
+    if (input.contains('commented')) {
+      return 'assets/temp/comment.svg';
+    } else if (input.contains('likes')) {
+      return 'assets/temp/likes.svg';
+    } else if (input.contains('vaccinated')) {
+      return 'assets/temp/vaccinated.svg';
+    } else if (input.contains('shared')) {
+      return 'assets/temp/share.svg';
+    } else if (input.contains('tutorial')) {
+      return 'assets/temp/tutorial.svg';
+    } else {
+      return '';
+    }
+  }
+
+  DateTime timeBlock = DateTime.now();
+  bool showBlockTitle = false;
+  String blockTitle = '';
+
+  @override
+  void initState() {
+    super.initState();
+    notifications.sort(
+      (a, b) => DateTime.parse(b.time).compareTo(DateTime.parse(a.time)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SizedBox(
+        height: context.height,
+        width: context.width,
+        child: Stack(
+          children: [
+            const BackgroundWidget(),
+            Container(
+              height: context.height,
+              width: context.width,
+              padding: const EdgeInsets.all(10),
+              child: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppSpace.spaceH6,
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            context.pop();
+                          },
+                          icon: const Icon(Icons.arrow_back),
+                        ),
+                        const QtecTextWidget(
+                          text: "Notification",
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ],
+                    ),
+                    AppSpace.spaceH10,
+                    if (false) const EmptyNotificationWidget(),
+                    Flexible(
+                        child: ListView.builder(
+                      itemCount: notifications.length,
+                      itemBuilder: (context, index) {
+                        var notification = notifications[index];
+                        var datetime = DateTime.parse(notification.time);
+
+                        if (datetime.isToday) {
+                          blockTitle = "Today";
+                        } else if (datetime.isYesterday) {
+                          blockTitle = "Yesterday";
+                        } else {
+                          blockTitle = DateFormat('dd-MM-yy').format(datetime);
+                        }
+
+                        if (timeBlock == datetime) {
+                          showBlockTitle = false;
+                        } else {
+                          showBlockTitle = true;
+                        }
+
+                        timeBlock = datetime;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (showBlockTitle)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: QtecTextWidget(
+                                  text: blockTitle,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            SizedBox(
+                              height: 60,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  AppSpace.spaceW10,
+                                  if (!notification.isSeen)
+                                    Container(
+                                      height: 8,
+                                      width: 8,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF1DD769),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                  if (notification.isSeen) AppSpace.spaceW8,
+                                  AppSpace.spaceW10,
+                                  SvgPicture.asset(
+                                      getIconPath(notification.text)),
+                                  AppSpace.spaceW10,
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      QtecTextWidget(
+                                        text: notification.text,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      QtecTextWidget(
+                                        text: notification.text,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall!
+                                            .color!
+                                            .withOpacity(0.7),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ))
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EmptyNotificationWidget extends StatelessWidget {
+  const EmptyNotificationWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: context.width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            'assets/icons/empty_notification.svg',
+            height: 156,
+            width: 170,
+          ),
+          AppSpace.spaceH16,
+          const QtecTextWidget(
+            text: "No Notifications",
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+          AppSpace.spaceH16,
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: QtecTextWidget(
+              text:
+                  'We’ll let you know when there will be something to update you.',
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
