@@ -85,6 +85,21 @@ class _NotificationsPageState extends State<NotificationsPage> {
     }
   }
 
+  String distanceFromNow(DateTime dateTime) {
+    DateTime now = DateTime.now();
+    Duration difference = now.difference(dateTime);
+
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} min ago';
+    } else if (difference.inHours < 24 && now.day == dateTime.day) {
+      return '${difference.inHours} hour ago';
+    } else if (difference.inDays == 1) {
+      return '1 day ago';
+    } else {
+      return '${difference.inDays} days ago';
+    }
+  }
+
   DateTime timeBlock = DateTime.now();
   bool showBlockTitle = false;
   String blockTitle = '';
@@ -131,7 +146,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       ],
                     ),
                     AppSpace.spaceH10,
-                    if (false) const EmptyNotificationWidget(),
+                    if (notifications.isEmpty) const EmptyNotificationWidget(),
                     Flexible(
                         child: ListView.builder(
                       itemCount: notifications.length,
@@ -198,7 +213,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                         fontWeight: FontWeight.w500,
                                       ),
                                       QtecTextWidget(
-                                        text: notification.text,
+                                        text: distanceFromNow(datetime),
                                         fontSize: 12,
                                         fontWeight: FontWeight.w400,
                                         color: Theme.of(context)
