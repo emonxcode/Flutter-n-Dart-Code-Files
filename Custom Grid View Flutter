@@ -1,31 +1,31 @@
-import 'package:dokanee/core/utils/extensions/extensions.dart'; // Assuming this is a custom extension file
 import 'package:flutter/material.dart';
+import 'package:poultry_agricare_app/core/utils/extensions/extensions.dart';
 
-class DokaneeGridView<T> extends StatefulWidget {
+class QtecGridView<T> extends StatefulWidget {
   final List<T> dataList;
   final IndexedWidgetBuilder itemBuilder;
-  final int rowCount; // Added rowCount parameter for dynamic rows
+  final int rowCount;
   final double? itemHeight;
   final double? itemWidth;
 
-  const DokaneeGridView({
+  const QtecGridView({
     super.key,
     required this.dataList,
     required this.itemBuilder,
-    required this.rowCount, // Validate rowCount
+    required this.rowCount,
     this.itemHeight,
     this.itemWidth,
   }) : assert(rowCount > 0, 'rowCount must be a positive integer');
 
   @override
-  State<DokaneeGridView<T>> createState() => _DokaneeGridViewState<T>();
+  State<QtecGridView<T>> createState() => _DokaneeGridViewState<T>();
 }
 
-class _DokaneeGridViewState<T> extends State<DokaneeGridView<T>> {
+class _DokaneeGridViewState<T> extends State<QtecGridView<T>> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      physics: const PageScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       child: Column(
         children: _buildRows(context),
       ),
@@ -52,7 +52,9 @@ class _DokaneeGridViewState<T> extends State<DokaneeGridView<T>> {
       }
 
       rows.add(Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: currentRow.length > 1
+            ? MainAxisAlignment.spaceBetween
+            : MainAxisAlignment.start,
         children: currentRow,
       ));
     }
