@@ -1,0 +1,24 @@
+dotted_line: ^3.2.2
+
+import 'package:dotted_line/dotted_line.dart';
+
+class DottedLineWidget extends StatelessWidget {
+  const DottedLineWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: DottedLine(
+        direction: Axis.horizontal,
+        alignment: WrapAlignment.center,
+        lineLength: double.infinity,
+        lineThickness: .5,
+        dashLength: 3.0,
+        dashColor: ColorPallete.secondaryTextColor,
+      ),
+    );
+  }
+}
