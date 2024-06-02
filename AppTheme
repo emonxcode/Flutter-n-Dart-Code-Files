@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-class AppTheme {
+class ColorTheme {
   static late ThemeModes theme;
 
   static void init(ThemeModes t) {
     theme = t;
   }
-
 
   static Color _getColor({required Color light, required Color dark}) {
     return theme == ThemeModes.light ? light : dark;
@@ -15,6 +14,5 @@ class AppTheme {
   /// get colors
   static get primaryColor => _getColor(light: Colors.black, dark: Colors.white);
 }
-
 
 enum ThemeModes { light, dark }
