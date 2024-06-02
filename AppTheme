@@ -7,13 +7,13 @@ class AppTheme {
     theme = t;
   }
 
-  static Color _getColor({required Color forLight, required Color forDark}) {
-    return theme == ThemeModes.light ? forLight : forDark;
+
+  static Color _getColor({required Color light, required Color dark}) {
+    return theme == ThemeModes.light ? light : dark;
   }
 
   /// get colors
-  static get primaryColor =>
-      _getColor(forLight: Colors.black, forDark: Colors.white);
+  static get primaryColor => _getColor(light: Colors.black, dark: Colors.white);
 }
 
 
