@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -17,17 +18,24 @@ extension BuildContextExtension on BuildContext {
 
   TextTheme get text => theme.textTheme;
 
-  double getSmallestWidth(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    double smallestWidth = screenSize.width < screenSize.height
-        ? screenSize.width
-        : screenSize.height;
+  double _getDPI() {
+    // Get the device's physical size and pixel ratio
+    final ui.Size physicalSize = View.of(this).physicalSize;
+    final double pixelRatio = View.of(this).devicePixelRatio;
 
-    return smallestWidth;
+    // Calculate the physical width and height in inches
+    final double physicalWidthInches = physicalSize.width / pixelRatio;
+    final double physicalHeightInches = physicalSize.height / pixelRatio;
+
+    // Calculate the DPI
+    final double dpi = (physicalSize.width / physicalWidthInches +
+            physicalSize.height / physicalHeightInches) /
+        2;
+    return dpi;
   }
 
   double getPixelForWidth(double pixel) {
-    return (pixel / getSmallestWidth(this)) * width;
+    return (pixel / _getDPI() * width);
   }
 
   double setFontSize(double fontSize) {
