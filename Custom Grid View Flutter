@@ -1,14 +1,14 @@
+import 'package:hishabiq/core/utils/extensions/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:poultry_agricare_app/core/utils/extensions/extensions.dart';
 
-class QtecGridView<T> extends StatefulWidget {
+class HishaBiQGridView<T> extends StatefulWidget {
   final List<T> dataList;
   final IndexedWidgetBuilder itemBuilder;
   final int rowCount;
   final double? itemHeight;
   final double? itemWidth;
 
-  const QtecGridView({
+  const HishaBiQGridView({
     super.key,
     required this.dataList,
     required this.itemBuilder,
@@ -18,10 +18,10 @@ class QtecGridView<T> extends StatefulWidget {
   }) : assert(rowCount > 0, 'rowCount must be a positive integer');
 
   @override
-  State<QtecGridView<T>> createState() => _DokaneeGridViewState<T>();
+  State<HishaBiQGridView<T>> createState() => _DokaneeGridViewState<T>();
 }
 
-class _DokaneeGridViewState<T> extends State<QtecGridView<T>> {
+class _DokaneeGridViewState<T> extends State<HishaBiQGridView<T>> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -53,7 +53,7 @@ class _DokaneeGridViewState<T> extends State<QtecGridView<T>> {
 
       rows.add(Row(
         mainAxisAlignment: currentRow.length > 1
-            ? MainAxisAlignment.spaceBetween
+            ? currentRow.length == 2 ? MainAxisAlignment.start : MainAxisAlignment.spaceBetween
             : MainAxisAlignment.start,
         children: currentRow,
       ));
