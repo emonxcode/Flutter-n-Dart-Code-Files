@@ -1,0 +1,4 @@
+  double calculatePixelValue(
+      double screenWidth, double smallestWidth, double pixel) {
+    return (pixel / smallestWidth) * screenWidth;
+  }
