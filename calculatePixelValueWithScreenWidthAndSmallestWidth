@@ -2,3 +2,9 @@
       double screenWidth, double smallestWidth, double pixel) {
     return (pixel / smallestWidth) * screenWidth;
   }
+
+/// formula
+
+              |      pixel     |
+screenWidth * |----------------|
+              | smallest width |
