@@ -2,6 +2,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+
+
 extension BuildContextExtension on BuildContext {
   MediaQueryData get mediaQuery => MediaQuery.of(this);
   ThemeData get theme => Theme.of(this);
@@ -19,18 +21,12 @@ extension BuildContextExtension on BuildContext {
   TextTheme get text => theme.textTheme;
 
   double _getDPI() {
-    // Get the device's physical size and pixel ratio
-    final ui.Size physicalSize = View.of(this).physicalSize;
-    final double pixelRatio = View.of(this).devicePixelRatio;
+    // Get the screen's pixel density
+    double pixelDensity = MediaQuery.of(this).devicePixelRatio;
 
-    // Calculate the physical width and height in inches
-    final double physicalWidthInches = physicalSize.width / pixelRatio;
-    final double physicalHeightInches = physicalSize.height / pixelRatio;
+    // Calculate screen DPI
+    double dpi = pixelDensity * 160;
 
-    // Calculate the DPI
-    final double dpi = (physicalSize.width / physicalWidthInches +
-            physicalSize.height / physicalHeightInches) /
-        2;
     return dpi;
   }
 
