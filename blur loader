@@ -1,0 +1,27 @@
+class CircularProgressLoadingWithShadow extends StatelessWidget {
+  const CircularProgressLoadingWithShadow({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+            decoration: BoxDecoration(
+                color: ColorPallete.whiteColor,
+                borderRadius: BorderRadius.circular(15)),
+            padding: const EdgeInsets.all(24),
+            child: const CircularProgressIndicator(
+              color: ColorPallete.primaryColorDark,
+              strokeWidth: 2,
+            )),
+      ),
+    );
+  }
+}
+
+
+   showDialog(
+      context: context,
+      builder: (context) => const CircularProgressLoadingWithShadow(),
+    );
