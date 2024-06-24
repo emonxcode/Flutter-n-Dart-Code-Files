@@ -1,0 +1,24 @@
+  GlobalKey _globalKey = GlobalKey();
+ 
+  Future<Uint8List?> _capturePng() async {
+    try {
+      final boundary = _globalKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary != null) {
+        final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+        final ByteData? byteData =
+            await image.toByteData(format: ui.ImageByteFormat.png); // change to jpg if needed
+        final Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+        return pngBytes;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
+/// wrap widget with RepaintBoundary to convert to image
+ RepaintBoundary(
+      key: _globalKey,
+      child: Container(),
+),
