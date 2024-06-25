@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ColorTheme {
   static late ThemeModes theme;
 
-  static void init(ThemeModes t) {
+  static void setup(ThemeModes t) {
     theme = t;
   }
 
