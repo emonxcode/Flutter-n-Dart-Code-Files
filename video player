@@ -27,3 +27,24 @@ AspectRatio(
          child: Chewie(
          controller: chewieController!,
      ))
+
+
+
+
+// video player issue fix
+
+add a file named network_security_config.xml in res/xml folder of android section and add these code :
+
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
+
+then add this line to manifest file application opening tag
+
+android:networkSecurityConfig="@xml/network_security_config"
+
