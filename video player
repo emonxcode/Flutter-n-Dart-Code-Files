@@ -1,0 +1,29 @@
+import 'package:chewie/chewie.dart';
+import 'package:video_player/video_player.dart';
+
+
+
+VideoPlayerController? videoPlayerController;
+  ChewieController? chewieController;
+  initVideo() async {
+    videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(widget.post.mediaUrl!));
+
+    chewieController = ChewieController(
+      videoPlayerController: videoPlayerController!,
+      autoPlay: true,
+      looping: true,
+    );
+    await videoPlayerController!.initialize();
+    setState(() {});
+  }
+  /// call this fuction to initState
+
+
+// uses
+
+AspectRatio(
+         aspectRatio: 16 / 4,
+         child: Chewie(
+         controller: chewieController!,
+     ))
