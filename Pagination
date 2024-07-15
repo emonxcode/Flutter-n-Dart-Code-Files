@@ -1,0 +1,118 @@
+****************************************************  cubit  ************************************************************************
+bool isListLoading = false;
+  List<SalesModel> sales = [];
+
+  bool hasMore = true;
+  int currentPage = 1;
+
+  Future<void> getSales(
+      {required BuildContext context, required int batchId}) async {
+    if (isListLoading || !hasMore) return;
+
+    isListLoading = true;
+    rebuild();
+
+    if (currentPage > 1 && sales.isEmpty) {
+      currentPage = 1;
+      hasMore = true;
+    }
+
+    final res = await _getSales(
+        GetSalesParams(batchId: batchId, currentPage: currentPage));
+    res.fold(
+      (l) {
+        if (l.message != "Unauthenticated." && context.mounted) {
+          CustomSneakBar.customSnackBar(
+            context: context,
+            snackText: l.message,
+            snackBackgroundColor: ColorPallete.redColor,
+            snackTextColor: ColorPallete.whiteColor,
+          );
+        }
+      },
+      (r) {
+        List<SalesModel> tempList = r;
+        if (r.isEmpty) {
+          hasMore = false;
+        } else {
+          if (hasMore) {
+            currentPage++;
+          }
+
+          sales.addAll(tempList);
+        }
+      },
+    );
+    isListLoading = false;
+    rebuild();
+  }
+
+
+
+
+****************************************************  ui initial ************************************************************************
+
+final ScrollController _scrollController = ScrollController();
+
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      if (context.read<SalesCubit>().selectedBatch != null) {
+        context.read<SalesCubit>().getSales(
+            context: context,
+            batchId: context.read<SalesCubit>().selectedBatch!.id);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+
+****************************************************  ui body ************************************************************************
+
+
+Expanded(
+                              child: cubit.isListLoading && cubit.sales.isEmpty
+                                  ? const Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : cubit.sales.isEmpty
+                                      ? const Center(
+                                          child: CustomTextWidget(
+                                          text: "No sales data!",
+                                          fontWeight: FontWeight.w200,
+                                        ))
+                                      : ListView.builder(
+                                          controller: _scrollController,
+                                          itemCount: cubit.sales.length,
+                                          itemBuilder: (context, index) {
+                                            var sale = cubit.sales[index];
+
+                                            return Column(
+                                                children: [
+
+                                                  //  item widget should implement here
+                                                  
+
+                                                  if (cubit.isListLoading &&
+                                                      cubit.sales.isNotEmpty &&
+                                                      cubit.sales.last.id ==
+                                                          sale.id)
+                                                    const SizedBox(
+                                                      height: 80,
+                                                      width: double.infinity,
+                                                      child: Center(
+                                                        child:
+                                                            CircularProgressIndicator(),
+                                                      ),
+                                                    )
+                                                ],
+                                              
+                                            );
+                                          },
+                                        )),
+                          
