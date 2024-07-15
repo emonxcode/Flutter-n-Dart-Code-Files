@@ -115,4 +115,15 @@ Expanded(
                                             );
                                           },
                                         )),
-                          
+
+
+
+****************************************************  when page pops clear list data, hasData set to true and currentPage to 1 ************************************************************************
+
+
+        canPop: true,
+        onPopInvoked: (didPop) {
+          context.read<BatchListCubit>().sales.clear();
+          context.read<BatchListCubit>().hasMore = true;
+          context.read<BatchListCubit>().currentPage = 1;
+        },
