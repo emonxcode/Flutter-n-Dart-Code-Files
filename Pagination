@@ -48,9 +48,10 @@ bool isListLoading = false;
   }
 
 
-
+****************************************************  consider that, you must clear list data when page changes or when needed **********
 
 ****************************************************  ui initial ************************************************************************
+
 
 final ScrollController _scrollController = ScrollController();
 
