@@ -101,6 +101,7 @@ class DownloadService {
 
 /// usecases
 
+  
   final DownloadService _downloadService = serviceLocator();
   double _progress = 0.0;
   double get getDownloadProgress => _progress;
@@ -151,6 +152,47 @@ class DownloadService {
       }
       rebuild();
     }
-    // _progress = -1;
-    //  rebuild();
+  }
+
+
+  List<Map<String, dynamic>> _downloadedCourseFolders = [];
+  List<Map<String, dynamic>> get getDownloadedFoldersAndFiles=> _downloadedCourseFolders;
+
+  Future<void> getFoldersAndFiles() async {
+    emit(state.copyWith(isLoading: true));
+    final directory = await getDownloadsDirectory();
+    var folderList = Directory(directory!.path)
+        .listSync()
+        .where((entity) => entity is Directory)
+        .map((entity) => {"folderName": path.basename(entity.path), "updatedAt": entity.statSync().changed})
+        .toList();
+
+
+    _downloadedCourseFolders.clear();
+    for(var folder in folderList){
+    var files = await _listFiles("/storage/emulated/0/Android/data/com.example.poultry_agricare_app/files/downloads/", folder['folderName'].toString());
+
+      _downloadedCourseFolders.add({
+        "folderName": folder['folderName'],
+        "updatedAt": folder['updatedAt'],
+        "files": files,
+      });
+    }
+    emit(state.copyWith(isLoading: false));
+  }
+
+
+ Future< List<Map<String, String>>> _listFiles(String basePath, String folderName) async {
+    final directory = Directory('${basePath}/${folderName}');
+    if (await directory.exists()) {
+      var fileList = directory
+          .listSync()
+          .where((entity) => entity is File)
+          .map((entity) => {"fileName":path.basename(entity.path), "path": entity.path})
+          .toList();
+
+      return fileList;
+    } else {
+      return [];
+    }
   }
