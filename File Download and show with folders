@@ -99,9 +99,12 @@ class DownloadService {
 
 
 
-/// usecases
+ ****************************************************************   usecases  *************************************************************
 
   
+
+
+
   final DownloadService _downloadService = serviceLocator();
   double _progress = 0.0;
   double get getDownloadProgress => _progress;
@@ -155,6 +158,10 @@ class DownloadService {
   }
 
 
+
+  final String _basePath = "/storage/emulated/0/Android/data/com.example.poultry_agricare_app/files/downloads/";
+  get basePath => _basePath;
+
   List<Map<String, dynamic>> _downloadedCourseFolders = [];
   List<Map<String, dynamic>> get getDownloadedFoldersAndFiles=> _downloadedCourseFolders;
 
@@ -170,7 +177,7 @@ class DownloadService {
 
     _downloadedCourseFolders.clear();
     for(var folder in folderList){
-    var files = await _listFiles("/storage/emulated/0/Android/data/com.example.poultry_agricare_app/files/downloads/", folder['folderName'].toString());
+    var files = await _listFiles(basePath, folder['folderName'].toString());
 
       _downloadedCourseFolders.add({
         "folderName": folder['folderName'],
@@ -195,4 +202,17 @@ class DownloadService {
     } else {
       return [];
     }
+  }
+
+  bool isDownloaded = false;
+  void checkFolderExistance(String folderName) async {
+    final directory = Directory('${basePath}${folderName}');
+    if (await directory.exists()) {
+      isDownloaded = true;
+    }else{
+      isDownloaded = false;
+    }
+    log(directory.path);
+    log(isDownloaded.toString());
+    rebuild();
   }
