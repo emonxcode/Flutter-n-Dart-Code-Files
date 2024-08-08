@@ -11,21 +11,26 @@ enum VideoType{
 }
 
 class DownloadService {
-  Future<(bool, String?)> downloadVideo(String fileName, String url, VideoType videoType, Function(int, int) onProgress) async {
+  Future<(bool, String?)> downloadVideo(
+      {
+        required String folderName,
+        required String fileName,
+        required  String? videoUrl,
+        required  VideoType videoType,
+        required  Function(int, int) onProgress}) async {
     if (await Permission.storage.isDenied) {
       var result = await _requestPermission(Permission.storage);
       if(!result){
         return (false, null);
       }
     }
-
-    String? videoUrl = url;
+    
     if(videoType == VideoType.youtube){
-       videoUrl = await _extractVideoUrl(url);
+       videoUrl = await _extractVideoUrl(videoUrl!);
     }
 
     if (videoUrl != null) {
-      return (true,  await _downloadFile(videoUrl, '$fileName.mp4', onProgress));
+      return (true,  await _downloadFile(videoUrl, folderName , '$fileName.mp4', onProgress));
     }
     return (false, null);
   }
@@ -46,9 +51,8 @@ class DownloadService {
     return null;
   }
 
-  Future<String?> _downloadFile(String url, String filename, Function(int, int) onProgress) async {
-
-
+  Future<String?> _downloadFile(String url, String folderName, String filename, Function(int, int) onProgress) async {
+    
     try {
       var request = http.Request('GET', Uri.parse(url));
       var response = await request.send();
@@ -57,7 +61,7 @@ class DownloadService {
       var receivedBytes = 0;
 
       var directory = await getDownloadsDirectory();
-      final newFolderPath = path.join(directory!.path, 'MyPoultryCourses');
+      final newFolderPath = path.join(directory!.path, folderName);
       await Directory(newFolderPath).create(recursive: true);
 
       var filePath = '$newFolderPath/$filename';
@@ -94,35 +98,59 @@ class DownloadService {
 
 
 
+
 /// usecases
 
   final DownloadService _downloadService = serviceLocator();
   double _progress = 0.0;
-  get getDownloadProgress => _progress;
+  double get getDownloadProgress => _progress;
 
-  void downloadVideo({required String url, required String courseName, required BuildContext context}) async {
-    final videoUrl = url;
-    final (status, resultUrl) = await _downloadService.downloadVideo(
-      courseName,
-      videoUrl,
-          VideoType.youtube,
-          (received, total) {
-        if (total != -1) {
-            _progress = received / total;
-            log('Course downloading... [$_progress%]');
-            rebuild();
-        }
-      },
-    );
-    log(resultUrl.toString());
-    if (status) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Download completed: $resultUrl')),
+  void downloadVideo(
+      {required String courseName,
+      required List<Map<String, String>> lessons,
+      required BuildContext context}) async {
+    _progress = 1;
+    rebuild();
+
+    for (var lesson in lessons) {
+      final (status, resultUrl) = await _downloadService.downloadVideo(
+        folderName: courseName,
+        videoUrl: lesson['url']!,
+        fileName: lesson['fileName']!,
+        videoType: VideoType.youtube,
+        onProgress: (received, total) {
+          log('downloading...' + ((received / total) * 100).ceil().toString());
+          _progress = (received / total) * 100;
+          rebuild();
+          if ((received / total) == 1.0) {
+            showSnackBar(
+              context: context,
+              snackText: 'Download complete!',
+              snackBackgroundColor: ColorPallete.primaryColor,
+              snackTextColor: ColorPallete.whiteColor,
+            );
+          }
+        },
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Download failed')),
-      );
+
+      log(resultUrl.toString());
+      if (status) {
+        showSnackBar(
+          context: context,
+          snackText: 'Download started, please don\'t close the app',
+          snackBackgroundColor: ColorPallete.primaryColor,
+          snackTextColor: ColorPallete.whiteColor,
+        );
+      } else {
+        showSnackBar(
+          context: context,
+          snackText: 'Download failed!',
+          snackBackgroundColor: ColorPallete.redColor,
+          snackTextColor: ColorPallete.whiteColor,
+        );
+      }
+      rebuild();
     }
+    // _progress = -1;
+    //  rebuild();
   }
-}
