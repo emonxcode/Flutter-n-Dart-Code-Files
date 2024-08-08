@@ -1,0 +1,128 @@
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:path/path.dart' as path;
+
+enum VideoType{
+  youtube,
+  mp4
+}
+
+class DownloadService {
+  Future<(bool, String?)> downloadVideo(String fileName, String url, VideoType videoType, Function(int, int) onProgress) async {
+    if (await Permission.storage.isDenied) {
+      var result = await _requestPermission(Permission.storage);
+      if(!result){
+        return (false, null);
+      }
+    }
+
+    String? videoUrl = url;
+    if(videoType == VideoType.youtube){
+       videoUrl = await _extractVideoUrl(url);
+    }
+
+    if (videoUrl != null) {
+      return (true,  await _downloadFile(videoUrl, '$fileName.mp4', onProgress));
+    }
+    return (false, null);
+  }
+
+  Future<String?> _extractVideoUrl(String url) async {
+    try {
+      var yt = YoutubeExplode();
+      var video = await yt.videos.get(url);
+      var manifest = await yt.videos.streamsClient.getManifest(video.id);
+      var streamInfo = manifest.muxed.withHighestBitrate();
+
+      if (streamInfo != null) {
+        return streamInfo.url.toString();
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+    return null;
+  }
+
+  Future<String?> _downloadFile(String url, String filename, Function(int, int) onProgress) async {
+
+
+    try {
+      var request = http.Request('GET', Uri.parse(url));
+      var response = await request.send();
+
+      var totalBytes = response.contentLength ?? -1;
+      var receivedBytes = 0;
+
+      var directory = await getDownloadsDirectory();
+      final newFolderPath = path.join(directory!.path, 'MyPoultryCourses');
+      await Directory(newFolderPath).create(recursive: true);
+
+      var filePath = '$newFolderPath/$filename';
+      var file = File(filePath);
+      var fileStream = file.openWrite();
+
+      response.stream.listen((chunk) {
+        fileStream.add(chunk);
+        receivedBytes += chunk.length;
+        onProgress(receivedBytes, totalBytes);
+      }, onDone: () async {
+        await fileStream.flush();
+        await fileStream.close();
+      }, onError: (e) {
+        print('Error: $e');
+      });
+
+      return filePath;
+    } catch (e) {
+      print('Error: $e');
+    }
+    return null;
+  }
+
+  Future<bool> _requestPermission(Permission permission) async {
+    if (await permission.isGranted) {
+      return true;
+    } else {
+      var result = await permission.request();
+      return result == PermissionStatus.granted;
+    }
+  }
+}
+
+
+
+/// usecases
+
+  final DownloadService _downloadService = serviceLocator();
+  double _progress = 0.0;
+  get getDownloadProgress => _progress;
+
+  void downloadVideo({required String url, required String courseName, required BuildContext context}) async {
+    final videoUrl = url;
+    final (status, resultUrl) = await _downloadService.downloadVideo(
+      courseName,
+      videoUrl,
+          VideoType.youtube,
+          (received, total) {
+        if (total != -1) {
+            _progress = received / total;
+            log('Course downloading... [$_progress%]');
+            rebuild();
+        }
+      },
+    );
+    log(resultUrl.toString());
+    if (status) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Download completed: $resultUrl')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Download failed')),
+      );
+    }
+  }
+}
