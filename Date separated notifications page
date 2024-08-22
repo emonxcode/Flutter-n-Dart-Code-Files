@@ -162,10 +162,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           blockTitle = DateFormat('dd-MM-yy').format(datetime);
                         }
 
-                        if (timeBlock == datetime) {
-                          showBlockTitle = false;
-                        } else {
+                        if (timeBlock != datetime && showBlockTitle == false) {
                           showBlockTitle = true;
+                        } else {
+                          showBlockTitle = false;
                         }
 
                         timeBlock = datetime;
@@ -173,7 +173,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (showBlockTitle)
+                            if (!showBlockTitle || index==0)
                               Padding(
                                 padding: const EdgeInsets.only(left: 10),
                                 child: QtecTextWidget(
