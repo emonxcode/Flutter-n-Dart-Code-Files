@@ -1,0 +1,14 @@
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+
+Future<String> getDownloadsDirPath() async {
+  Directory? downloadsDirectory;
+
+  if (Platform.isAndroid) {
+    downloadsDirectory = Directory('/storage/emulated/0/Download');
+  } else {
+    downloadsDirectory = await getDownloadsDirectory();
+  }
+
+  return downloadsDirectory?.path ?? '';
+}
