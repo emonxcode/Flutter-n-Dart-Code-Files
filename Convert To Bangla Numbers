@@ -1,0 +1,26 @@
+String convertToBanglaNumbers(String input) {
+  // Map of English to Bangla numbers
+  const englishToBanglaNumbers = {
+    '0': '০',
+    '1': '১',
+    '2': '২',
+    '3': '৩',
+    '4': '৪',
+    '5': '৫',
+    '6': '৬',
+    '7': '৭',
+    '8': '৮',
+    '9': '৯'
+  };
+
+  // Replace each English number in the string with its Bangla counterpart
+  return input.split('').map((char) {
+    return englishToBanglaNumbers[char] ?? char;
+  }).join('');
+}
+
+void main() {
+  String text = "Today's date is 27-10-2024";
+  String result = convertToBanglaNumbers(text);
+  print(result);  // Output: "Today's date is ২৭-১০-২০২৪"
+}
