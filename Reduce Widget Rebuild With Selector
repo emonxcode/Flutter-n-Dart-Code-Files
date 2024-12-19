@@ -1,0 +1,90 @@
+import 'dart:developer';
+import 'package:ar_globe_flutter/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+void main() {
+  runApp(const ProviderScope(child: MyApp()));
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text("AR Globe")),
+        body: MyScreen(),
+      ),
+    );
+  }
+}
+
+class MyScreen extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: AppBar(
+        // Only rebuilds when the title changes
+        title: TitleWidget(),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Only rebuilds when counter1 changes
+          Counter1Widget(),
+
+          // Only rebuilds when counter2 changes
+          Counter2Widget(),
+        ],
+      ),
+    );
+  }
+}
+
+class TitleWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final title = ref.watch(counterProvider.select((state) => state.title));
+    return Text(title);
+  }
+}
+
+class Counter1Widget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final counter1 =
+        ref.watch(counterProvider.select((state) => state.counter1));
+    log("Counter1Widget : rebuild()");
+    return Column(
+      children: [
+        Text('Counter 1: $counter1'),
+        ElevatedButton(
+          onPressed: () => ref.watch(counterProvider).incrementCounter1(),
+          child: Text('Increment Counter 1'),
+        ),
+      ],
+    );
+  }
+}
+
+class Counter2Widget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // final counter1 =
+    //     ref.watch(counterProvider.select((state) => state.counter1));
+    final counter2 =
+        ref.watch(counterProvider.select((state) => state.counter2));
+    log("Counter2Widget : rebuild()");
+    return Column(
+      children: [
+        Text('Counter 2: $counter2'),
+        ElevatedButton(
+          onPressed: () => ref.watch(counterProvider).incrementCounter2(),
+          child: Text('Increment Counter 2'),
+        ),
+      ],
+    );
+  }
+}
