@@ -1,0 +1,6 @@
+  // global error widget, add this code in main function
+  ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
+    return CustomFlutterErrorWidget(
+      error: errorDetails.exceptionAsString(),
+    );
+  };
