@@ -1,0 +1,37 @@
+import 'dart:html' as html;
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: WebAPKDownloader(),
+  ));
+}
+
+class WebAPKDownloader extends StatelessWidget {
+  final String fileUrl = 'https://github.com/emonxcode/Flutter-n-Dart-Code-Files/raw/main/Floora%20-%20Easy%20And%20Quick%20Floor%20Plan.apk';
+  final String fileName = 'Floora.apk';
+
+  void downloadFile() {
+    final anchor = html.AnchorElement(href: fileUrl)
+      ..setAttribute("download", fileName)
+      ..click();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("APK Downloader - Web")),
+      body: Center(
+        child: ElevatedButton.icon(
+          icon: Icon(Icons.download),
+          label: Text("Download Floora APK"),
+          onPressed: downloadFile,
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
+        ),
+      ),
+    );
+  }
+}
