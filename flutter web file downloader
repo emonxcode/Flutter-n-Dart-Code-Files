@@ -9,6 +9,7 @@ void main() {
 }
 
 class WebAPKDownloader extends StatelessWidget {
+   /// url should by encrypted, and decrepyted when downloading
   final String fileUrl = 'https://github.com/emonxcode/Flutter-n-Dart-Code-Files/raw/main/Floora%20-%20Easy%20And%20Quick%20Floor%20Plan.apk';
   final String fileName = 'Floora.apk';
 
