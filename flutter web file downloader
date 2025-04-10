@@ -1,32 +1,49 @@
+import 'dart:convert';
 import 'dart:html' as html;
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: WebAPKDownloader(),
+    home: WebFileDownloader(),
   ));
 }
 
-class WebAPKDownloader extends StatelessWidget {
-   /// url should by encrypted, and decrepyted when downloading
-  final String fileUrl = 'https://github.com/emonxcode/Flutter-n-Dart-Code-Files/raw/main/Floora%20-%20Easy%20And%20Quick%20Floor%20Plan.apk';
-  final String fileName = 'Floora.apk';
+class WebFileDownloader extends StatefulWidget {
+  @override
+  State<WebFileDownloader> createState() => _WebFileDownloaderState();
+}
+
+class _WebFileDownloaderState extends State<WebFileDownloader> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void downloadFile() {
-    final anchor = html.AnchorElement(href: fileUrl)
-      ..setAttribute("download", fileName)
-      ..click();
+    try {
+      String base64Str =
+          'aHR0cHM6Ly9naXRodWIuY29tL2Vtb254Y29kZS9GbHV0dGVyLW4tRGFydC1Db2RlLUZpbGVzL3Jhdy9tYWluL0Zsb29yYSUyMC0lMjBFYXN5JTIwQW5kJTIwUXVpY2slMjBGbG9vciUyMFBsYW4uYXBr';
+      String decoded = utf8.decode(base64.decode(base64Str));
+      final anchor = html.AnchorElement(href: decoded)
+        ..setAttribute("download", 'beego.apk')
+        ..click();
+    } catch (exception) {
+      print(exception.toString());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("APK Downloader - Web")),
+      appBar: AppBar(
+        title: Text("Flutter Web File Downloader"),
+        centerTitle: true,
+      ),
       body: Center(
         child: ElevatedButton.icon(
           icon: Icon(Icons.download),
-          label: Text("Download Floora APK"),
+          label: Text("Download File"),
           onPressed: downloadFile,
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
